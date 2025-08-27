@@ -1,0 +1,7 @@
+type Query {
+    # our first gql query
+    firstQuery: String
+
+    #our second gql query
+    secondQuery(firstName: String!, lastName: String) : String
+}
