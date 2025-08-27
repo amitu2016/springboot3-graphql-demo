@@ -4,4 +4,19 @@ type Query {
 
     #our second gql query
     secondQuery(firstName: String!, lastName: String) : String
+
+    #get all students records
+    getAllStudents: [StudentResponse]
 }
+
+type StudentResponse {
+    id: ID!
+    name: String!
+    contact: String
+    result: [StudentSubjectResponse]
+   }
+
+type StudentSubjectResponse {
+    subjectName: String!
+    marks: Float
+   }
