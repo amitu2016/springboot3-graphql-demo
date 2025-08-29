@@ -7,6 +7,7 @@ import com.amitu.graphql_springboot_tutorial.entity.Member;
 import com.amitu.graphql_springboot_tutorial.entity.MemberType;
 import com.amitu.graphql_springboot_tutorial.repository.MemberRepository;
 import com.amitu.graphql_springboot_tutorial.response.StudentResponse;
+import com.amitu.graphql_springboot_tutorial.response.TeacherResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,9 @@ public class MemberService {
 	
 	@Autowired
 	private ResultService resultService;
+
+    @Autowired
+    private SubjectService subjectService;
 
 	public List<StudentResponse> getStudents() {
 		System.out.println(":: in MemberService, fetching all students ::");
@@ -38,5 +42,22 @@ public class MemberService {
 		}
 		return responses;
 	}
-	
+
+    public List<TeacherResponse> getTeachers() {
+        System.out.println(":: in MemberService, fetching all teachers ::");
+        List<Member> teachers = repository.findByTypeIgnoreCase(MemberType.TEACHER.toString());
+        List<TeacherResponse> responses = new ArrayList<TeacherResponse>();
+        for(Member teacher : teachers) {
+            TeacherResponse teacherRes = new TeacherResponse();
+            teacherRes.setId(teacher.getId());
+            teacherRes.setName(teacher.getFirstName()+" "+teacher.getLastName());
+            teacherRes.setContact(teacher.getContact());
+
+            // get subjects for each teacher
+            //teacherRes.setSubjects(subjectService.getSubjectsForTeacher(teacher.getId()));
+
+            responses.add(teacherRes);
+        }
+        return responses;
+    }
 }
