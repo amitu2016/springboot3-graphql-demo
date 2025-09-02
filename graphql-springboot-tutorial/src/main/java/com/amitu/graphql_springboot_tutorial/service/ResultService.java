@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.amitu.graphql_springboot_tutorial.entity.Result;
 import com.amitu.graphql_springboot_tutorial.repository.ResultRepository;
+import com.amitu.graphql_springboot_tutorial.response.MemberResponse;
+import com.amitu.graphql_springboot_tutorial.response.MemberSearchResult;
 import com.amitu.graphql_springboot_tutorial.response.StudentResponse;
 import com.amitu.graphql_springboot_tutorial.response.StudentSubjectResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +35,41 @@ public class ResultService {
 		return responses;
 	}
 
-    public Map<StudentResponse, List<StudentSubjectResponse>> getResultsForAllStudents(List<StudentResponse> students) {
+
+    public Map<MemberSearchResult, List<?>> getResultaForSearch(List<MemberSearchResult> students) {
         List<Result> results = repository.findAll();
 
-        Map<StudentResponse, List<StudentSubjectResponse>> batchingMap = new HashMap<StudentResponse, List<StudentSubjectResponse>>();
-        for (StudentResponse student: students) {
-            List<StudentSubjectResponse> responses = new ArrayList<StudentSubjectResponse>();
-            for (Result result: results) {
-                if (student.getId() == result.getStudent().getId()) {
+        Map<MemberSearchResult, List<?>> batchingMap = new HashMap<>();
+        for (MemberSearchResult response: students) {
+            List<StudentSubjectResponse> ssResponse = new ArrayList<StudentSubjectResponse>();
+            for(Result result: results) {
+                if(response.getId() == result.getStudent().getId()) {
                     StudentSubjectResponse res = new StudentSubjectResponse();
                     res.setMarks(result.getMarks());
                     res.setSubjectName(result.getSubject().getSubjectName());
-                    responses.add(res);
+                    ssResponse.add(res);
                 }
             }
-            batchingMap.put(student, responses);
+            batchingMap.put(response, ssResponse);
+        }
+        return batchingMap;
+    }
+
+    public Map<MemberResponse, List<?>> getResultsForAllStudents(List<MemberResponse> studemts) {
+        List<Result> results = repository.findAll();
+
+        Map<MemberResponse, List<?>> batchingMap = new HashMap<>();
+        for (MemberResponse response: studemts) {
+            List<StudentSubjectResponse> ssResponse = new ArrayList<StudentSubjectResponse>();
+            for(Result result: results) {
+                if(response.getId() == result.getStudent().getId()) {
+                    StudentSubjectResponse res = new StudentSubjectResponse();
+                    res.setMarks(result.getMarks());
+                    res.setSubjectName(result.getSubject().getSubjectName());
+                    ssResponse.add(res);
+                }
+            }
+            batchingMap.put(response, ssResponse);
         }
         return batchingMap;
     }

@@ -2,6 +2,8 @@ package com.amitu.graphql_springboot_tutorial.service;
 
 import com.amitu.graphql_springboot_tutorial.entity.Subject;
 import com.amitu.graphql_springboot_tutorial.repository.SubjectRepository;
+import com.amitu.graphql_springboot_tutorial.response.MemberResponse;
+import com.amitu.graphql_springboot_tutorial.response.MemberSearchResult;
 import com.amitu.graphql_springboot_tutorial.response.TeacherResponse;
 import com.amitu.graphql_springboot_tutorial.response.TeacherSubjectResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +33,11 @@ public class SubjectService {
         return responses;
     }
 
-    public Map<TeacherResponse, List<TeacherSubjectResponse>> getSubjectsForAllTeachers(List<TeacherResponse> teachers) {
+    public Map<MemberResponse, List<?>> getSubjectsForAllTeachers(List<MemberResponse> teachers) {
         List<Subject> subjects = repository.findAll();
 
-        Map<TeacherResponse, List<TeacherSubjectResponse>> batchingMap = new HashMap<TeacherResponse, List<TeacherSubjectResponse>>();
-        for (TeacherResponse teacher : teachers) {
+        Map<MemberResponse, List<?>> batchingMap = new HashMap<>();
+        for (MemberResponse teacher : teachers) {
             List<TeacherSubjectResponse> responses = new ArrayList<TeacherSubjectResponse>();
             for (Subject subject : subjects) {
                 if (teacher.getId() == subject.getTeacher().getId()) {
@@ -46,6 +48,25 @@ public class SubjectService {
                 }
             }
             batchingMap.put(teacher, responses);
+        }
+        return batchingMap;
+    }
+
+    public Map<? extends MemberSearchResult,? extends List<?>> getSubjectSearchResults(List<MemberSearchResult> teachers) {
+        List<Subject> subjects = repository.findAll();
+
+        Map<MemberSearchResult, List<?>> batchingMap = new HashMap<>();
+        for (MemberSearchResult response: teachers) {
+            List<TeacherSubjectResponse> ssResponse = new ArrayList<>();
+            for(Subject sub : subjects) {
+                if(response.getId() == sub.getTeacher().getId()) {
+                    TeacherSubjectResponse res = new TeacherSubjectResponse();
+                    res.setSubjectName(sub.getSubjectName());
+                    res.setYearsOfExperience(sub.getExperience());
+                    ssResponse.add(res);
+                }
+            }
+            batchingMap.put(response, ssResponse);
         }
         return batchingMap;
     }
